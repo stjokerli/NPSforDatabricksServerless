@@ -1,0 +1,391 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "nspName": {
+            "type": "String",
+            "metadata": {
+                "description": "Name of the Network Security Perimeter (e.g., databricks-nsp)"
+            }
+        },
+        "location": {
+            "type": "String",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Region for the NSP. Should match your Databricks workspace and Azure resources region."
+            }
+        },
+        "nspProfileName": {
+            "type": "String",
+            "defaultValue": "databricks-profile",
+            "metadata": {
+                "description": "Name of the NSP Profile (e.g., databricks-profile)"
+            }
+        },
+        "inboundRuleName": {
+            "type": "String",
+            "defaultValue": "allow-databricks-serverless",
+            "metadata": {
+                "description": "Name of the inbound access rule for Databricks serverless"
+            }
+        },
+        "restrictToSpecificRegion": {
+            "type": "Bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Set to true to restrict serverless access to a specific Azure region"
+            }
+        },
+        "serverlessRegion": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Azure region for serverless access restriction (e.g., EastUS2). Only used if restrictToSpecificRegion is true."
+            }
+        },
+        "nspAccessMode": {
+            "type": "String",
+            "defaultValue": "Learning",
+            "allowedValues": [
+                "Learning",
+                "Enforced"
+            ],
+            "metadata": {
+                "description": "NSP access mode - Learning (Transition) allows fallback to resource firewall rules, Enforced blocks all non-NSP traffic"
+            }
+        },
+        "associateStorageAccount": {
+            "type": "Bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Set to true to associate a storage account with the NSP"
+            }
+        },
+        "storageAccountResourceId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Full resource ID of the storage account to associate with NSP (e.g., /subscriptions/{sub-id}/resourceGroups/{rg}/providers/Microsoft.Storage/storageAccounts/{name})"
+            }
+        },
+        "associateKeyVault": {
+            "type": "Bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Set to true to associate a Key Vault with the NSP"
+            }
+        },
+        "keyVaultResourceId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Full resource ID of the Key Vault to associate with NSP"
+            }
+        },
+        "associateSqlServer": {
+            "type": "Bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Set to true to associate an Azure SQL Server with the NSP"
+            }
+        },
+        "sqlServerResourceId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Full resource ID of the Azure SQL Server to associate with NSP"
+            }
+        },
+        "associateEventHub": {
+            "type": "Bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Set to true to associate an Event Hub namespace with the NSP"
+            }
+        },
+        "eventHubResourceId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Full resource ID of the Event Hub namespace to associate with NSP"
+            }
+        },
+        "associateCosmosDb": {
+            "type": "Bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Set to true to associate a Cosmos DB account with the NSP"
+            }
+        },
+        "cosmosDbResourceId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Full resource ID of the Cosmos DB account to associate with NSP"
+            }
+        },
+        "associateServiceBus": {
+            "type": "Bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Set to true to associate a Service Bus namespace with the NSP"
+            }
+        },
+        "serviceBusResourceId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Full resource ID of the Service Bus namespace to associate with NSP"
+            }
+        },
+        "associateContainerRegistry": {
+            "type": "Bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Set to true to associate a Container Registry with the NSP"
+            }
+        },
+        "containerRegistryResourceId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Full resource ID of the Container Registry to associate with NSP"
+            }
+        },
+        "associateCognitiveServices": {
+            "type": "Bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Set to true to associate a Cognitive Services account with the NSP"
+            }
+        },
+        "cognitiveServicesResourceId": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Full resource ID of the Cognitive Services account to associate with NSP"
+            }
+        }
+    },
+    "variables": {
+        "nspApiVersion": "2023-08-01-preview",
+        "serverlessServiceTag": "[if(parameters('restrictToSpecificRegion'), format('AzureDatabricksServerless.{0}', parameters('serverlessRegion')), 'AzureDatabricksServerless')]",
+        "nspProfileResourceId": "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityPerimeters",
+            "apiVersion": "[variables('nspApiVersion')]",
+            "name": "[parameters('nspName')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityPerimeters/profiles",
+            "apiVersion": "[variables('nspApiVersion')]",
+            "name": "[format('{0}/{1}', parameters('nspName'), parameters('nspProfileName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters', parameters('nspName'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityPerimeters/profiles/accessRules",
+            "apiVersion": "[variables('nspApiVersion')]",
+            "name": "[format('{0}/{1}/{2}', parameters('nspName'), parameters('nspProfileName'), parameters('inboundRuleName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]"
+            ],
+            "properties": {
+                "direction": "Inbound",
+                "serviceTags": [
+                    "[variables('serverlessServiceTag')]"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityPerimeters/resourceAssociations",
+            "apiVersion": "[variables('nspApiVersion')]",
+            "name": "[format('{0}/assoc-storage-{1}', parameters('nspName'), uniqueString(parameters('storageAccountResourceId')))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles/accessRules', parameters('nspName'), parameters('nspProfileName'), parameters('inboundRuleName'))]"
+            ],
+            "properties": {
+                "privateLinkResource": {
+                    "id": "[parameters('storageAccountResourceId')]"
+                },
+                "profile": {
+                    "id": "[variables('nspProfileResourceId')]"
+                },
+                "accessMode": "[parameters('nspAccessMode')]"
+            },
+            "condition": "[and(parameters('associateStorageAccount'), not(empty(parameters('storageAccountResourceId'))))]"
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityPerimeters/resourceAssociations",
+            "apiVersion": "[variables('nspApiVersion')]",
+            "name": "[format('{0}/assoc-keyvault-{1}', parameters('nspName'), uniqueString(parameters('keyVaultResourceId')))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles/accessRules', parameters('nspName'), parameters('nspProfileName'), parameters('inboundRuleName'))]"
+            ],
+            "properties": {
+                "privateLinkResource": {
+                    "id": "[parameters('keyVaultResourceId')]"
+                },
+                "profile": {
+                    "id": "[variables('nspProfileResourceId')]"
+                },
+                "accessMode": "[parameters('nspAccessMode')]"
+            },
+            "condition": "[and(parameters('associateKeyVault'), not(empty(parameters('keyVaultResourceId'))))]"
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityPerimeters/resourceAssociations",
+            "apiVersion": "[variables('nspApiVersion')]",
+            "name": "[format('{0}/assoc-sql-{1}', parameters('nspName'), uniqueString(parameters('sqlServerResourceId')))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles/accessRules', parameters('nspName'), parameters('nspProfileName'), parameters('inboundRuleName'))]"
+            ],
+            "properties": {
+                "privateLinkResource": {
+                    "id": "[parameters('sqlServerResourceId')]"
+                },
+                "profile": {
+                    "id": "[variables('nspProfileResourceId')]"
+                },
+                "accessMode": "[parameters('nspAccessMode')]"
+            },
+            "condition": "[and(parameters('associateSqlServer'), not(empty(parameters('sqlServerResourceId'))))]"
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityPerimeters/resourceAssociations",
+            "apiVersion": "[variables('nspApiVersion')]",
+            "name": "[format('{0}/assoc-eventhub-{1}', parameters('nspName'), uniqueString(parameters('eventHubResourceId')))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles/accessRules', parameters('nspName'), parameters('nspProfileName'), parameters('inboundRuleName'))]"
+            ],
+            "properties": {
+                "privateLinkResource": {
+                    "id": "[parameters('eventHubResourceId')]"
+                },
+                "profile": {
+                    "id": "[variables('nspProfileResourceId')]"
+                },
+                "accessMode": "[parameters('nspAccessMode')]"
+            },
+            "condition": "[and(parameters('associateEventHub'), not(empty(parameters('eventHubResourceId'))))]"
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityPerimeters/resourceAssociations",
+            "apiVersion": "[variables('nspApiVersion')]",
+            "name": "[format('{0}/assoc-cosmosdb-{1}', parameters('nspName'), uniqueString(parameters('cosmosDbResourceId')))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles/accessRules', parameters('nspName'), parameters('nspProfileName'), parameters('inboundRuleName'))]"
+            ],
+            "properties": {
+                "privateLinkResource": {
+                    "id": "[parameters('cosmosDbResourceId')]"
+                },
+                "profile": {
+                    "id": "[variables('nspProfileResourceId')]"
+                },
+                "accessMode": "[parameters('nspAccessMode')]"
+            },
+            "condition": "[and(parameters('associateCosmosDb'), not(empty(parameters('cosmosDbResourceId'))))]"
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityPerimeters/resourceAssociations",
+            "apiVersion": "[variables('nspApiVersion')]",
+            "name": "[format('{0}/assoc-servicebus-{1}', parameters('nspName'), uniqueString(parameters('serviceBusResourceId')))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles/accessRules', parameters('nspName'), parameters('nspProfileName'), parameters('inboundRuleName'))]"
+            ],
+            "properties": {
+                "privateLinkResource": {
+                    "id": "[parameters('serviceBusResourceId')]"
+                },
+                "profile": {
+                    "id": "[variables('nspProfileResourceId')]"
+                },
+                "accessMode": "[parameters('nspAccessMode')]"
+            },
+            "condition": "[and(parameters('associateServiceBus'), not(empty(parameters('serviceBusResourceId'))))]"
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityPerimeters/resourceAssociations",
+            "apiVersion": "[variables('nspApiVersion')]",
+            "name": "[format('{0}/assoc-acr-{1}', parameters('nspName'), uniqueString(parameters('containerRegistryResourceId')))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles/accessRules', parameters('nspName'), parameters('nspProfileName'), parameters('inboundRuleName'))]"
+            ],
+            "properties": {
+                "privateLinkResource": {
+                    "id": "[parameters('containerRegistryResourceId')]"
+                },
+                "profile": {
+                    "id": "[variables('nspProfileResourceId')]"
+                },
+                "accessMode": "[parameters('nspAccessMode')]"
+            },
+            "condition": "[and(parameters('associateContainerRegistry'), not(empty(parameters('containerRegistryResourceId'))))]"
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityPerimeters/resourceAssociations",
+            "apiVersion": "[variables('nspApiVersion')]",
+            "name": "[format('{0}/assoc-cognitive-{1}', parameters('nspName'), uniqueString(parameters('cognitiveServicesResourceId')))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles/accessRules', parameters('nspName'), parameters('nspProfileName'), parameters('inboundRuleName'))]"
+            ],
+            "properties": {
+                "privateLinkResource": {
+                    "id": "[parameters('cognitiveServicesResourceId')]"
+                },
+                "profile": {
+                    "id": "[variables('nspProfileResourceId')]"
+                },
+                "accessMode": "[parameters('nspAccessMode')]"
+            },
+            "condition": "[and(parameters('associateCognitiveServices'), not(empty(parameters('cognitiveServicesResourceId'))))]"
+        }
+    ],
+    "outputs": {
+        "nspResourceId": {
+            "type": "String",
+            "value": "[resourceId('Microsoft.Network/networkSecurityPerimeters', parameters('nspName'))]"
+        },
+        "nspProfileResourceId": {
+            "type": "String",
+            "value": "[variables('nspProfileResourceId')]"
+        },
+        "nspName": {
+            "type": "String",
+            "value": "[parameters('nspName')]"
+        },
+        "nspProfileName": {
+            "type": "String",
+            "value": "[parameters('nspProfileName')]"
+        },
+        "serverlessServiceTagUsed": {
+            "type": "String",
+            "value": "[variables('serverlessServiceTag')]"
+        }
+    }
+}
