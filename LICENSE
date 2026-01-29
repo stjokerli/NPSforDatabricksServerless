@@ -1,21 +1,97 @@
-MIT License
+Server Side Public License
+Version 1, October 16, 2018
 
-Copyright (c) 2026 Wanyu Li
+Copyright © 2026 Wanyu Li
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Everyone is permitted to copy and distribute verbatim copies of this
+license document, but changing it is not allowed.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+TERMS AND CONDITIONS
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+0. Definitions.
+
+“This License” refers to the Server Side Public License.
+
+“Copyright” also means copyright-like laws that apply to other kinds of
+works, such as semiconductor masks.
+
+“The Program” refers to any copyrightable work licensed under this
+License. Each licensee is addressed as “you”.
+
+“Source code” means the preferred form of the work for making
+modifications to it.
+
+“Object code” means any non-source form of a work.
+
+“To make the functionality of the Program or a modified version
+available to third parties as a service” means to make the functionality
+of the Program or modified version available to third parties by providing
+access to the functionality of the Program or modified version via a
+network.
+
+1. Source Code.
+
+The “Source Code” for a work means the preferred form of the work for
+making modifications to it.
+
+2. Basic Permissions.
+
+You are granted a worldwide, royalty-free, non-exclusive license to use,
+reproduce, modify, and distribute the Program, subject to the conditions
+stated in this License.
+
+3. Copyleft.
+
+If you convey a copy of the Program, then you must license the entire work,
+as a whole, under this License to anyone who comes into possession of a
+copy.
+
+4. Making the Program Available as a Service.
+
+If you make the functionality of the Program or a modified version
+available to third parties as a service, you must make the Service Source
+Code available under this License.
+
+“Service Source Code” means the Corresponding Source for the Program or
+the modified version, and the Corresponding Source for all programs that
+you use to make the Program or modified version available as a service,
+including, without limitation, management software, user interfaces,
+application program interfaces, automation software, monitoring software,
+backup software, storage software, and hosting software.
+
+5. Conveying Modified Versions.
+
+You may convey a work based on the Program, or the modifications to
+produce it, provided that you also meet all of these conditions:
+
+a) The work must carry prominent notices stating that you modified it,
+   and giving a relevant date.
+
+b) The work must carry prominent notices stating that it is released
+   under this License and any conditions added under section 7.
+
+c) You must license the entire work, as a whole, under this License.
+
+6. No Additional Restrictions.
+
+You may not impose any further restrictions on the exercise of the rights
+granted or affirmed under this License.
+
+7. Disclaimer of Warranty.
+
+THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
+APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
+HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY
+OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM
+IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF
+ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+8. Limitation of Liability.
+
+IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL
+ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE
+PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY
+GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE
+USE OR INABILITY TO USE THE PROGRAM.
