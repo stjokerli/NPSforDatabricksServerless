@@ -68,6 +68,13 @@
                 "description": "Full resource ID of the storage account to associate with NSP (e.g., /subscriptions/{sub-id}/resourceGroups/{rg}/providers/Microsoft.Storage/storageAccounts/{name})"
             }
         },
+        "storageAccountLocation": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Location of the existing storage account. Required if associating a storage account."
+            }
+        },
         "associateKeyVault": {
             "type": "Bool",
             "defaultValue": false,
@@ -170,7 +177,11 @@
     "variables": {
         "nspApiVersion": "2023-08-01-preview",
         "serverlessServiceTag": "[if(parameters('restrictToSpecificRegion'), format('AzureDatabricksServerless.{0}', parameters('serverlessRegion')), 'AzureDatabricksServerless')]",
-        "nspProfileResourceId": "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]"
+        "nspProfileResourceId": "[resourceId('Microsoft.Network/networkSecurityPerimeters/profiles', parameters('nspName'), parameters('nspProfileName'))]",
+        "storageApiVersion": "2023-05-01",
+         "storageAccountName": "[last(split(parameters('storageAccountResourceId'), '/'))]",
+                "storageAccountResourceGroup": "[split(parameters('storageAccountResourceId'), '/')[4]]",
+        "storageAccountSubscription": "[split(parameters('storageAccountResourceId'), '/')[2]]"
     },
     "resources": [
         {
@@ -364,6 +375,16 @@
                 "accessMode": "[parameters('nspAccessMode')]"
             },
             "condition": "[and(parameters('associateCognitiveServices'), not(empty(parameters('cognitiveServicesResourceId'))))]"
+        },
+
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "[variables('storageApiVersion')]",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('storageAccountLocation')]",
+            "properties": {
+                "publicNetworkAccess": "SecuredByPerimeter"
+            }
         }
     ],
     "outputs": {
@@ -386,6 +407,18 @@
         "serverlessServiceTagUsed": {
             "type": "String",
             "value": "[variables('serverlessServiceTag')]"
+        },
+        "storageAccountName": {
+            "type": "String",
+            "value": "[variables('storageAccountName')]"
+        },
+        "storageAccountResourceId": {
+            "type": "String",
+            "value": "[parameters('storageAccountResourceId')]"
+        },
+        "publicNetworkAccess": {
+            "type": "String",
+            "value": "SecuredByPerimeter"
         }
     }
-}
+    }
