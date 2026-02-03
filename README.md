@@ -18,11 +18,7 @@ This ARM template deploys an Azure Network Security Perimeter (NSP) configured f
 - [Deployment Guide](#deployment-guide)
 - [Parameter File Examples](#parameter-file-examples)
 - [Verification Steps](#verification-steps)
-- [Access Modes](#access-modes)
-- [Regional Restrictions](#regional-restrictions)
-- [Troubleshooting](#troubleshooting)
-- [Additional Resources](#additional-resources)
-
+- [Powershell version solution, thanks to Bruce Nelson's work](https://github.com/brucenelson6655/nsp-migrate)
 ---
 
 ## Introduction
@@ -33,6 +29,7 @@ Azure Network Security Perimeter (NSP) is an Azure-native feature that allows yo
 - Centrally manage network access using simplified rule sets
 - Replace complex IP address and subnet ID management
 - Control access from Azure Databricks serverless compute to your Azure resources
+- If your company are more familiar with the powershell solution here is the resource my collage Bruce Nelson built that providing great alternative option [nsp-migrate](https://github.com/brucenelson6655/nsp-migrate)
 
 ### What This Template Does
 
